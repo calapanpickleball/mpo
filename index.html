@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mindoro Pickleball Org. Cup 2026</title><meta name="description" content="MPO Cup 2026 — Battle the best. Claim the crown. Register your doubles team.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,700;1,700;1,800&display=swap"><link rel="stylesheet" href="style.css"></head><body>
+<nav><div class="wrap"><b>MPO <span>CUP 2026</span></b><div><a href="#categories">Categories</a><a href="#details">Details</a><a href="#faq">FAQ</a><a href="#register" class="btn" style="padding:8px 18px;margin-left:22px">Register</a></div></div></nav>
+<header class="hero"><div class="wrap"><small>Mindoro Pickleball Org. presents</small><h1>Cup 2026</h1><p>Battle the Best. Claim the Crown.</p><div class="badge">Biggest Prize Pool Yet!</div>
+<div class="facts"><div><i>Date</i><span data-s="date"></span></div><div><i>Venue</i><span data-s="venue"></span></div><div><i>Prize Pool</i><span data-s="prize"></span></div></div>
+<a href="#register" class="btn">Register your team</a> <a href="#categories" class="btn gold">View categories</a><div style="margin-top:22px;color:var(--mute)">Limited slots · First-paid, first-confirmed</div></div></header>
+<section id="categories"><div class="wrap"><h2>Tournament Categories</h2><p class="lead">All categories are doubles. Registration is per team of two.</p><div class="grid" id="cats"></div></div></section>
+<section class="alt" id="details"><div class="wrap"><h2>Why Compete</h2><p class="lead">One of the largest prize pools ever offered in an MPO tournament.</p>
+<div class="grid"><div class="card"><div class="num">01</div><h3>Prize Pool</h3>Compete for the biggest purse yet: <b data-s="prize"></b>.</div><div class="card"><div class="num">02</div><h3>Glory</h3>Earn championship glory and bragging rights in high-level competition.</div><div class="card"><div class="num">03</div><h3>Community</h3>Meet pickleball enthusiasts from across the region.</div></div>
+<h2 style="margin-top:50px">Event Info</h2><div class="grid"><div class="card"><h3>Date</h3><span data-s="date"></span></div><div class="card"><h3>Venue</h3><span data-s="venue"></span></div><div class="card"><h3>Entry Fee</h3><span data-s="fee"></span></div><div class="card"><h3>Registration Deadline</h3><span data-s="deadline"></span></div></div></div></section>
+<section><div class="wrap"><h2>How It Works</h2><div class="grid"><div class="card"><div class="num">1</div>Submit your team using the form below.</div><div class="card"><div class="num">2</div>MPO reviews and contacts you to confirm your slot.</div><div class="card"><div class="num">3</div>Pay the entry fee. Slots are first-paid, first-confirmed.</div><div class="card"><div class="num">4</div>Show up and play.</div></div></div></section>
+<section class="alt" id="register"><div class="wrap"><h2>Team Registration</h2><p class="lead" id="regnote">Fill in both players' details. Submitting does not guarantee a slot until confirmed and paid.</p>
+<form id="f"><label>Category *</label><select name="category" required><option value="">Select category…</option></select>
+<label>Team name *</label><input name="team" required maxlength="60">
+<div class="row"><div><label>Player 1 full name *</label><input name="p1" required></div><div><label>Player 2 full name *</label><input name="p2" required></div></div>
+<div class="row"><div><label>Player 1 city / municipality *</label><input name="c1" required></div><div><label>Player 2 city / municipality *</label><input name="c2" required></div></div>
+<div class="row"><div><label>Team contact number *</label><input name="phone" type="tel" required pattern="[0-9+\- ]{7,}"></div><div><label>Email *</label><input name="email" type="email" required></div></div>
+<label>Notes (optional)</label><textarea name="notes" rows="2"></textarea>
+<label class="chk"><input type="checkbox" name="agree" required> I confirm that the details are correct and that we agree to follow the tournament rules and MPO's decisions.</label>
+<p style="margin-top:20px"><button class="btn" id="sb">Submit registration</button></p><div id="out"></div></form></div></section>
+<section id="faq"><div class="wrap"><h2>FAQ</h2>
+<details><summary>Who can join the Advanced Open?</summary>It is an all-gender doubles category and is open to players outside Mindoro.</details>
+<details><summary>When is my slot confirmed?</summary>Slots are first-paid, first-confirmed. You will be contacted after your submission is reviewed.</details>
+<details><summary>Who do I contact?</summary><span data-s="contact"></span> · <span data-s="phone"></span> · <span data-s="email"></span></details></div></section>
+<footer><b style="color:#fff;letter-spacing:.1em">MINDORO PICKLEBALL ORG. (MPO)</b><br>Serving Wellness Across Mindoro.<br><small>© 2026 MPO · <a href="admin.html">Admin</a></small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.min.js"></script><script src="firebase-init.js"></script>
+<script>
+const f=document.getElementById('f'),sel=f.category;
+CATEGORIES.forEach(c=>sel.add(new Option(c,c)));
+document.getElementById('cats').innerHTML=CATEGORIES.map(c=>`<div class="card ${c.startsWith('Adv')?'adv':''}"><h3>${esc(c)}</h3>${c.startsWith('Adv')?'<span class="tag">Open to players outside Mindoro</span>':'Doubles'}</div>`).join('');
+getSettings().then(s=>{document.querySelectorAll('[data-s]').forEach(e=>e.textContent=s[e.dataset.s]);
+ if(!s.open){f.querySelectorAll('input,select,textarea,button').forEach(e=>e.disabled=true);document.getElementById('regnote').textContent='Registration is currently closed. More updates coming soon.';}});
+f.onsubmit=async e=>{e.preventDefault();const b=document.getElementById('sb'),o=document.getElementById('out');b.disabled=true;
+ const d=Object.fromEntries(new FormData(f));delete d.agree;
+ try{await db.collection(REG).add({...d,status:'Submitted',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  o.innerHTML='<div class="msg ok"><b>Registration received!</b> We will contact you at the number provided to confirm your slot.</div>';f.reset();}
+ catch(err){o.innerHTML='<div class="msg err">Could not submit. Please try again or contact us. ('+esc(err.code||err.message)+')</div>';}
+ b.disabled=false;};
+</script></body></html>
