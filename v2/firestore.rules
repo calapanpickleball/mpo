@@ -1,8 +1,0 @@
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // TEMPORARY / PASSCODE-ONLY SETUP: admin.html reads & edits from the browser, so these must be open.
-    match /mpo-cup2026/{id}          { allow read, write: if true; }
-    match /mpo-cup2026-settings/{id} { allow read, write: if true; }
-  }
-}
