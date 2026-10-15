@@ -1,7 +1,21 @@
 /* Shared config for MPO Cup 2026. Needs firebase-init.js loaded first (provides db, REG, SET). */
 const MPO_CATS=["Low Intermediate Men's Doubles","Low Intermediate Women's Doubles","High Intermediate Men's Doubles","High Intermediate Women's Doubles","Advanced Open (All-Gender Doubles)"];
-const MPO_STATUSES=["Submitted","Confirmed-Unpaid","Confirmed-Paid","Rejected"];
-const MPO_DEF={date:"November 28–29, 2026",venue:"Balai Mindoro",fee:"₱1,500 per player",slots:"24",open:"2026-10-13",close:"2026-11-17",mode:"open",contact:"",phone:"",email:""};
+const MPO_STATUSES=["Submitted","Confirmation-Sent","Confirmed-Unpaid","Confirmed-Partial","Confirmed-Paid","Rejected"];
+/* Paste the Google Apps Script web app URL (or any webhook) here. Empty = test mode (no email sent). */
+const MPO_WEBHOOK="";
+const MPO_PAY_MODES=["Cash","Bank transfer","GCash"];
+const MPO_SIZES=["XS","S","M","L","XL","2XL","Others"];
+const MPO_SHIRT_TYPES=["Tournament Shirt","Organizer Shirt","Merch"];
+const MPO_CLASSES=["Organizer","Player","Sponsor"];
+const MPO_FIN_CATS=["Venue","Courts & Equipment","Balls","Prizes & Trophies","Shirts & Merch","Referees & Staff","Food & Drinks","Marketing & Printing","Medical & Safety","Admin & Misc"];
+const MPO_PLEDGE_STATUS=["Pledged","Received"];
+const MPO_SHIRT_PAY=["Paid","Unpaid","Waived"];
+/* 6-char unique code (A-Z, 0-9; skips look-alikes 0/O/1/I). Pass the registrations collection ref to guarantee uniqueness. */
+async function mpoGenCode(col){const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+ for(let t=0;t<20;t++){let c="";const r=crypto.getRandomValues(new Uint32Array(6));for(const n of r)c+=A[n%A.length];
+  if(!(await col.where("code","==",c).limit(1).get()).size)return c;}
+ throw new Error("Could not generate a unique code");}
+const MPO_DEF={date:"November 28–29, 2026",venue:"Balai Mindoro",fee:"₱1,500 per player",feeNum:"1500",slots:"24",open:"2026-10-13",close:"2026-11-17",mode:"open",contact:"",phone:"",email:""};
 const mpoEsc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 async function mpoSettings(){const d=(await SET.get()).data()||{},o={};for(const k in MPO_DEF)o[k]=d["x_"+k]??MPO_DEF[k];return o;}
 async function mpoSave(o){const d={};for(const k in o)d["x_"+k]=o[k];await SET.set(d,{merge:true});}
